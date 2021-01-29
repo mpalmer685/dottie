@@ -1,0 +1,3 @@
+# Dottie
+
+A dotfile manager
