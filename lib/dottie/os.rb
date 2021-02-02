@@ -11,7 +11,7 @@ module Dottie
       when /linux/
         new :linux
       else
-        raise Exception "Unknown platform #{RUBY_PLATFORM}"
+        raise "Unknown platform #{RUBY_PLATFORM}"
       end
     end
 

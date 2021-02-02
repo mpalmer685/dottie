@@ -61,7 +61,7 @@ describe Dottie::Initializer do
           }
         }
       )
-      expect { subject.init '/home/dotfiles' }.to raise_error(Exception)
+      expect { subject.init '/home/dotfiles' }.to raise_error(RuntimeError)
     end
   end
 
@@ -91,7 +91,7 @@ describe Dottie::Initializer do
           }
         }
       )
-      expect { subject.init '/home/dotfiles' }.to raise_error(Exception)
+      expect { subject.init '/home/dotfiles' }.to raise_error(RuntimeError)
     end
   end
 end

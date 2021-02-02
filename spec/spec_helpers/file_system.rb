@@ -36,8 +36,8 @@ module SpecHelper
     end
 
     def read_file(path)
-      raise Exception "#{path} does not exist" unless exist?(path)
-      raise Exception "#{path} is not a file" unless file?(path)
+      raise "#{path} does not exist" unless exist?(path)
+      raise "#{path} is not a file" unless file?(path)
 
       get_from_path path
     end
@@ -46,6 +46,22 @@ module SpecHelper
       segments = path_segments path
       directory = @files.dig(*segments[0...-1])
       directory[segments.last] = content
+    end
+
+    def delete_file(path)
+      raise "#{path} is not a file" unless file?(path)
+
+      segments = path_segments path
+      directory = @files.dig(*segments[0...-1])
+      directory.delete(segments.last)
+    end
+
+    def delete_directory(path)
+      raise "#{path} is not a directory" unless directory?(path)
+
+      segments = path_segments path
+      directory = @files.dig(*segments[0...-1])
+      directory.delete(segments.last)
     end
 
     private
