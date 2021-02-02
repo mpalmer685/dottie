@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'commander/import'
+
+require_relative '../lib/dottie'
+
+program :name, 'dottie'
+program :version, '0.0.1'
+program :description, 'A dotfiles manager'
+
+command :init do |c|
+  c.syntax = 'dottie init [install location]'
+  c.summary = 'Set up Dottie as your Dotfiles manager'
+  c.example 'Set up Dottie in the default location (~/.dottie)', 'dottie init'
+  c.example 'Set up Dottie at ~/.dotfiles', 'dottie init ~/.dotfiles'
+  c.when_called do |args, _|
+    Dottie::Commands::Init.run args.first || '~/.dottie'
+  end
+end

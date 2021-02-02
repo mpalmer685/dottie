@@ -1,6 +1,6 @@
-require "dottie/version"
+# frozen_string_literal: true
 
-module Dottie
-  class Error < StandardError; end
-  # Your code goes here...
-end
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+
+require 'dottie/commands/init'
+require 'dottie/version'
