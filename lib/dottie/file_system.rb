@@ -29,7 +29,7 @@ module Dottie
       end
 
       def read_file(path)
-        return File.read(path) if file?(file)
+        return File.read(path) if file?(path)
 
         raise "Unable to read file at #{path}"
       end

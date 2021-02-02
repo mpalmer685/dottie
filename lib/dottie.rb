@@ -3,4 +3,5 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'dottie/commands/init'
+require 'dottie/commands/reset'
 require 'dottie/version'
