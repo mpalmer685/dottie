@@ -16,13 +16,7 @@ command :init do |c|
   c.example 'Set up Dottie at ~/.dotfiles', 'dottie init ~/.dotfiles'
   c.when_called do |args, _|
     dotfile_path = File.expand_path(args.first || '~/.dottie')
-
-    begin
-      Dottie::Commands::Init.new.init(dotfile_path)
-    rescue RuntimeError => e
-      warn e.message
-      exit 1
-    end
+    run_task Dottie::Commands::Init, dotfile_path
   end
 end
 
@@ -43,4 +37,15 @@ command :reset do |c|
 
     Dottie::Commands::Reset.run
   end
+end
+
+def run_task(cmd = nil, *args)
+  if cmd.nil?
+    yield(*args)
+  else
+    cmd.new.run(*args)
+  end
+rescue RuntimeError => e
+  Dottie::Logger.default.error e.message
+  exit 1
 end

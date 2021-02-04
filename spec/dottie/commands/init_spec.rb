@@ -16,7 +16,7 @@ describe Dottie::Commands::Init do
 
   context 'when the dotfiles directory does not exist' do
     before do
-      subject.init '/home/dottie'
+      subject.run '/home/dottie'
     end
 
     it 'should create the folder structure in the dotfile dir' do
@@ -47,7 +47,7 @@ describe Dottie::Commands::Init do
           }
         }
       )
-      expect { subject.init '/home/dotfiles' }.not_to raise_error
+      expect { subject.run '/home/dotfiles' }.not_to raise_error
     end
 
     it 'should raise an error when the directory is not empty' do
@@ -61,7 +61,7 @@ describe Dottie::Commands::Init do
           }
         }
       )
-      expect { subject.init '/home/dotfiles' }.to raise_error(RuntimeError)
+      expect { subject.run '/home/dotfiles' }.to raise_error(RuntimeError)
     end
   end
 
@@ -76,7 +76,7 @@ describe Dottie::Commands::Init do
           }
         }
       )
-      expect { subject.init '/home/dotfiles' }.not_to raise_error
+      expect { subject.run '/home/dotfiles' }.not_to raise_error
     end
 
     it 'should raise an error when the directory is not empty' do
@@ -91,7 +91,7 @@ describe Dottie::Commands::Init do
           }
         }
       )
-      expect { subject.init '/home/dotfiles' }.to raise_error(RuntimeError)
+      expect { subject.run '/home/dotfiles' }.to raise_error(RuntimeError)
     end
   end
 end

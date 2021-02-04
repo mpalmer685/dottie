@@ -16,7 +16,7 @@ module Dottie
         @logger = logger
       end
 
-      def init(dotfile_path)
+      def run(dotfile_path)
         raise "#{dotfile_path} already exists and is not empty" unless directory_available? dotfile_path
         raise "#{@os.config_dir} is not empty" unless directory_available? @os.config_dir
 
@@ -24,7 +24,6 @@ module Dottie
         create_folder_structure dotfile_path
         create_config_dir
         write_config_files dotfile_path
-        @logger.success 'Dottie is ready to go!'
       end
 
       private
