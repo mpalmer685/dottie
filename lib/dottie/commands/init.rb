@@ -4,23 +4,27 @@ require 'dottie/models/config'
 require 'dottie/models/profiles_settings'
 require 'dottie/models/exec_cache'
 require 'dottie/file_system'
+require 'dottie/logger'
 require 'dottie/os'
 
 module Dottie
   module Commands
     class Init
-      def initialize(file_system = Dottie::FileSystem, os = Dottie::OS.current)
+      def initialize(file_system = Dottie::FileSystem, os = Dottie::OS.current, logger = Dottie::Logger.default)
         @file_system = file_system
         @os = os
+        @logger = logger
       end
 
       def init(dotfile_path)
         raise "#{dotfile_path} already exists and is not empty" unless directory_available? dotfile_path
         raise "#{@os.config_dir} is not empty" unless directory_available? @os.config_dir
 
+        @logger.info "Setting up dottie at #{dotfile_path}"
         create_folder_structure dotfile_path
         create_config_dir
         write_config_files dotfile_path
+        @logger.success 'Dottie is ready to go!'
       end
 
       private

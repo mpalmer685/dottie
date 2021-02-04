@@ -18,7 +18,6 @@ command :init do |c|
     dotfile_path = File.expand_path(args.first || '~/.dottie')
 
     begin
-      puts "Setting up dottie at #{dotfile_path}"
       Dottie::Commands::Init.new.init(dotfile_path)
     rescue RuntimeError => e
       warn e.message

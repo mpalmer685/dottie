@@ -3,6 +3,7 @@ PATH
   specs:
     dottie (0.1.0)
       commander
+      tty-logger
 
 GEM
   remote: https://rubygems.org/
@@ -11,6 +12,8 @@ GEM
       highline (~> 2.0.0)
     diff-lcs (1.4.4)
     highline (2.0.3)
+    pastel (0.8.0)
+      tty-color (~> 0.5)
     rake (10.5.0)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -25,6 +28,9 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.3)
+    tty-color (0.6.0)
+    tty-logger (0.6.0)
+      pastel (~> 0.8)
 
 PLATFORMS
   ruby
