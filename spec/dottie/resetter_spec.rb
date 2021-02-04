@@ -7,7 +7,7 @@ files = {
   'home': {
     'config': {
       'dottie': {
-        'dottie_config.yml': "---\n:dotfile_path: \"/home/dottie\""
+        'dottie_config.yml': "---\ndotfile_path: \"/home/dottie\""
       }
     },
     'dottie': {

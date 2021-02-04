@@ -7,12 +7,12 @@ module Dottie
     module Yaml
       module ClassMethods
         def from_yaml(yaml)
-          new(*YAML.load(yaml).values_at(*members))
+          new(*YAML.load(yaml).transform_keys(&:to_sym).values_at(*members))
         end
       end
 
       def to_yaml
-        to_h.to_yaml
+        to_h.transform_keys(&:to_s).to_yaml
       end
 
       def self.included(includer)
