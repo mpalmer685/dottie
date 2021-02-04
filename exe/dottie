@@ -24,18 +24,7 @@ command :reset do |c|
   c.syntax = 'dottie reset'
   c.summary = 'Remove all Dottie files and settings'
   c.when_called do
-    continue = ask(
-      "<%= color('Warning', BOLD, YELLOW) %> This will remove all Dottie files and settings. Continue? [y/N] ",
-      ->(yn) { yn.downcase[0] == "y" }
-    ) do |q|
-      q.validate                 = /\A(?:y(?:es)?|no?)?\Z/i
-      q.responses[:not_valid]    = 'Please enter "yes" or "no".'
-      q.responses[:ask_on_error] = :question
-      q.completion               = %w[yes no]
-    end
-    exit unless continue
-
-    Dottie::Commands::Reset.run
+    run_task Dottie::Commands::Reset
   end
 end
 
