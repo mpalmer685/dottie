@@ -1,40 +1,63 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'commander/import'
+require 'commander'
 
 require_relative '../lib/dottie'
 
-program :name, 'dottie'
-program :version, '0.0.1'
-program :description, 'A dotfiles manager'
+class DottieCLI
+  include Commander::Methods
 
-command :init do |c|
-  c.syntax = 'dottie init [install location]'
-  c.summary = 'Set up Dottie as your Dotfiles manager'
-  c.example 'Set up Dottie in the default location (~/.dottie)', 'dottie init'
-  c.example 'Set up Dottie at ~/.dotfiles', 'dottie init ~/.dotfiles'
-  c.when_called do |args, _|
-    dotfile_path = File.expand_path(args.first || '~/.dottie')
-    run_task Dottie::Commands::Init, dotfile_path
+  def initialize
+    @logger = Dottie::Logger.default
+  end
+
+  def run
+    program :name, 'dottie'
+    program :version, '0.0.1'
+    program :description, 'A dotfiles manager'
+
+    init_command
+    reset_command
+
+    run!
+  end
+
+  private
+
+  def init_command
+    command :init do |c|
+      c.syntax = 'dottie init [install location]'
+      c.summary = 'Set up Dottie as your Dotfiles manager'
+      c.example 'Set up Dottie in the default location (~/.dottie)', 'dottie init'
+      c.example 'Set up Dottie at ~/.dotfiles', 'dottie init ~/.dotfiles'
+      c.when_called do |args, _|
+        dotfile_path = File.expand_path(args.first || '~/.dottie')
+        run_task Dottie::Commands::Init, dotfile_path
+      end
+    end
+  end
+
+  def reset_command
+    command :reset do |c|
+      c.syntax = 'dottie reset'
+      c.summary = 'Remove all Dottie files and settings'
+      c.when_called do
+        run_task Dottie::Commands::Reset
+      end
+    end
+  end
+
+  def run_task(cmd = nil, *args)
+    if cmd.nil?
+      yield(*args)
+    else
+      cmd.new.run(*args)
+    end
+  rescue RuntimeError => e
+    @logger.error e.message
+    exit 1
   end
 end
 
-command :reset do |c|
-  c.syntax = 'dottie reset'
-  c.summary = 'Remove all Dottie files and settings'
-  c.when_called do
-    run_task Dottie::Commands::Reset
-  end
-end
-
-def run_task(cmd = nil, *args)
-  if cmd.nil?
-    yield(*args)
-  else
-    cmd.new.run(*args)
-  end
-rescue RuntimeError => e
-  Dottie::Logger.default.error e.message
-  exit 1
-end
+DottieCLI.new.run if $PROGRAM_NAME == __FILE__
