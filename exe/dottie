@@ -15,7 +15,15 @@ command :init do |c|
   c.example 'Set up Dottie in the default location (~/.dottie)', 'dottie init'
   c.example 'Set up Dottie at ~/.dotfiles', 'dottie init ~/.dotfiles'
   c.when_called do |args, _|
-    Dottie::Commands::Init.run args.first || '~/.dottie'
+    dotfile_path = File.expand_path(args.first || '~/.dottie')
+
+    begin
+      puts "Setting up dottie at #{dotfile_path}"
+      Dottie::Commands::Init.new.init(dotfile_path)
+    rescue RuntimeError => e
+      warn e.message
+      exit 1
+    end
   end
 end
 

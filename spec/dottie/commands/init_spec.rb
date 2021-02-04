@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require 'dottie/initializer'
+require 'dottie/commands/init'
 
 files = {
   'home': {
@@ -9,8 +9,8 @@ files = {
   }
 }
 
-describe Dottie::Initializer do
-  subject { Dottie::Initializer.new(file_system, os) }
+describe Dottie::Commands::Init do
+  subject { Dottie::Commands::Init.new(file_system, os) }
   let(:file_system) { SpecHelper::FileSystem.new.use(files) }
   let(:os) { SpecHelper::OS.new.use(:macos, '/home/config') }
 
@@ -95,3 +95,4 @@ describe Dottie::Initializer do
     end
   end
 end
+
