@@ -11,6 +11,10 @@ module SpecHelper
       self
     end
 
+    def add(files)
+      @files = merge_recursively(@files, files)
+    end
+
     def exist?(path)
       !get_from_path(path).nil?
     end
@@ -64,6 +68,14 @@ module SpecHelper
       directory.delete(segments.last)
     end
 
+    def symlink?(path)
+      file?(path) && get_from_path(path).start_with?('@')
+    end
+
+    def symlink(from, to)
+      write_file(from, "@#{to}")
+    end
+
     private
 
     def get_from_path(path)
@@ -76,6 +88,16 @@ module SpecHelper
 
     def deep_copy(hash)
       Marshal.load(Marshal.dump(hash))
+    end
+
+    def merge_recursively(target, source)
+      target.merge(source) do |_, target_item, source_item|
+        if target_item.is_a?(Hash) || source_item.is_a?(Hash)
+          merge_recursively(target_item, source_item)
+        else
+          source_item || target_item
+        end
+      end
     end
   end
 end
