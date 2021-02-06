@@ -7,6 +7,10 @@ module Dottie
     ProfilesSettings = Struct.new(:repos, :profiles, :shells, keyword_init: true) do
       include KeywordYaml
 
+      def self.config_file_location(os)
+        File.join(os.config_dir, 'profiles_settings.yml')
+      end
+
       def add_repo(repo)
         self.repos ||= {}
         self.repos[repo.id] = repo

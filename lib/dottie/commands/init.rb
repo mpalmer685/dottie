@@ -43,14 +43,9 @@ module Dottie
       end
 
       def write_config_files(dotfile_path)
-        write_config 'dottie_config.yml', Dottie::Models::Config.new(dotfile_path)
-        write_config 'profiles_settings.yml', Dottie::Models::ProfilesSettings.new
-        write_config 'exec_cache.yml', Dottie::Models::ExecCache.new
-      end
-
-      def write_config(file_name, config)
-        file_path = File.join @os.config_dir, file_name
-        @file_system.write_file file_path, config.to_yaml
+        Dottie::Models::Config.new(dotfile_path).save(@file_system, @os)
+        Dottie::Models::ProfilesSettings.new.save(@file_system, @os)
+        Dottie::Models::ExecCache.new.save(@file_system, @os)
       end
     end
   end
