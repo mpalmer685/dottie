@@ -77,15 +77,13 @@ describe Dottie::Storage::Profiles do
   end
 
   it 'should add a remote profile' do
-    profiles_settings.add_repo(
-      Dottie::Models::Repo.from_definition({ 'url' => 'git' })
-    )
+    profiles_settings.add_repo(Dottie::Models::Repo.from_git('git'))
     file_system.add(
       {
         home: {
           dottie: {
             repos: {
-              git___: {
+              git: {
                 profile: {
                   Dotfile: ''
                 }
@@ -96,25 +94,23 @@ describe Dottie::Storage::Profiles do
       }
     )
 
-    profile = subject.from_repo('git___', 'profile')
-    expect(profile.repo_id).to eql('git___')
+    profile = subject.from_repo('git', 'profile')
+    expect(profile.repo_id).to eql('git')
     expect(profile.source_path).to eql('profile')
     expect(profile.parent_id).to be_nil
     expect(profile.id).not_to be_nil
     expect(profiles_settings.profile(profile.id)).not_to be_nil
-    expect(file_system.symlink?('/home/dottie/profiles/git_____profile')).to be(true)
+    expect(file_system.symlink?('/home/dottie/profiles/git__profile')).to be(true)
   end
 
   context 'when a remote profile is already installed' do
     before :each do
-      profiles_settings.add_repo(
-        Dottie::Models::Repo.from_definition({ 'url' => 'git' })
-      )
+      profiles_settings.add_repo(Dottie::Models::Repo.from_git('git'))
       profiles_settings.add_profile(
         Dottie::Models::Profile.new(
-          repo_id: 'git___',
+          repo_id: 'git',
           source_path: 'profile',
-          id: 'git_____profile'
+          id: 'git__profile'
         )
       )
       file_system.add(
@@ -122,14 +118,14 @@ describe Dottie::Storage::Profiles do
           home: {
             dottie: {
               repos: {
-                git___: {
+                git: {
                   profile: {
                     Dotfile: ''
                   }
                 }
               },
               profiles: {
-                git_____profile: '@/home/dottie/repos/git___/profile'
+                git__profile: '@/home/dottie/repos/git/profile'
               }
             }
           }
@@ -138,27 +134,15 @@ describe Dottie::Storage::Profiles do
     end
 
     it 'should use the existing symlink' do
-      expect { subject.from_repo('git___','profile') }.not_to(
-        change { file_system.symlink?('/home/dottie/profiles/git_____profile') }
+      expect { subject.from_repo('git','profile') }.not_to(
+        change { file_system.symlink?('/home/dottie/profiles/git__profile') }
       )
     end
 
     it 'should use the existing profile' do
-      expect { subject.from_repo('git___','profile') }.not_to(
-        change { profiles_settings.profile('git_____profile') }
+      expect { subject.from_repo('git','profile') }.not_to(
+        change { profiles_settings.profile('git__profile') }
       )
     end
-  end
-
-  it 'should return a previously installed remote profile' do
-
-
-    profile = subject.from_local('/home/profiles/test')
-    expect(profile.repo_id).to be_nil
-    expect(profile.source_path).to eql('/home/profiles/test')
-    expect(profile.parent_id).to be_nil
-    expect(profile.id).not_to be_nil
-    expect(profiles_settings.profile(profile.id)).not_to be_nil
-    expect(file_system.symlink?('/home/dottie/profiles/_home_profiles_test')).to be(true)
   end
 end
