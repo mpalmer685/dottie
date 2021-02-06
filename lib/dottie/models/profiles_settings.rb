@@ -29,6 +29,10 @@ module Dottie
         profile
       end
 
+      def remove_profile(profile_id)
+        self.profiles.delete(profile_id)
+      end
+
       def profile(id)
         return if self.profiles.nil?
 

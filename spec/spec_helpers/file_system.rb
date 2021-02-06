@@ -76,6 +76,10 @@ module SpecHelper
       write_file(from, "@#{to}")
     end
 
+    def unlink(path)
+      delete_file(path)
+    end
+
     private
 
     def get_from_path(path)

@@ -20,7 +20,7 @@ describe Dottie::Storage::Profiles do
   let(:dottie_config) { Dottie::Models::Config.new('/home/dottie') }
   let(:profiles_settings) { Dottie::Models::ProfilesSettings.new }
   let(:file_system) { SpecHelper::FileSystem.new.use(files) }
-  let(:logger) { Dottie::Logger.default }
+  let(:logger) { Dottie::Logger.silent }
 
   it 'should add a local profile' do
     file_system.add(
@@ -35,7 +35,7 @@ describe Dottie::Storage::Profiles do
       }
     )
 
-    profile = subject.from_local('/home/profiles/test')
+    profile = subject.install_from_local('/home/profiles/test')
     expect(profile.repo_id).to be_nil
     expect(profile.source_path).to eql('/home/profiles/test')
     expect(profile.parent_id).to be_nil
@@ -64,13 +64,13 @@ describe Dottie::Storage::Profiles do
     end
 
     it 'should use the existing symlink' do
-      expect { subject.from_local('/home/profiles/test') }.not_to(
+      expect { subject.install_from_local('/home/profiles/test') }.not_to(
         change { file_system.symlink?('/home/dottie/profiles/_home_profiles_test') }
       )
     end
 
     it 'should use the existing profile' do
-      expect { subject.from_local('/home/profiles/test') }.not_to(
+      expect { subject.install_from_local('/home/profiles/test') }.not_to(
         change { profiles_settings.profile('_home_profiles_test') }
       )
     end
@@ -94,7 +94,7 @@ describe Dottie::Storage::Profiles do
       }
     )
 
-    profile = subject.from_repo('git', 'profile')
+    profile = subject.install_from_repo('git', 'profile')
     expect(profile.repo_id).to eql('git')
     expect(profile.source_path).to eql('profile')
     expect(profile.parent_id).to be_nil
@@ -134,15 +134,37 @@ describe Dottie::Storage::Profiles do
     end
 
     it 'should use the existing symlink' do
-      expect { subject.from_repo('git','profile') }.not_to(
+      expect { subject.install_from_repo('git','profile') }.not_to(
         change { file_system.symlink?('/home/dottie/profiles/git__profile') }
       )
     end
 
     it 'should use the existing profile' do
-      expect { subject.from_repo('git','profile') }.not_to(
+      expect { subject.install_from_repo('git','profile') }.not_to(
         change { profiles_settings.profile('git__profile') }
       )
     end
+  end
+
+  it 'should uninstall an installed profile' do
+    profiles_settings.add_profile(
+      Dottie::Models::Profile.new(source_path: '/home/profiles/test', id: '_home_profiles_test')
+    )
+
+    file_system.add(
+      {
+        home: {
+          dottie: {
+            profiles: {
+              _home_profiles_test: '@/home/profiles/test'
+            }
+          }
+        }
+      }
+    )
+
+    subject.uninstall('_home_profiles_test')
+    expect(file_system.exist?('/home/dottie/profiles/_home_profiles_test')).to be(false)
+    expect(profiles_settings.profile('_home_profiles_test')).to be_nil
   end
 end
