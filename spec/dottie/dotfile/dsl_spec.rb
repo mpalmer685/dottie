@@ -5,19 +5,17 @@ require 'dottie/dotfile'
 module Dottie
   files = {
     home: {
-      dottie: {
-        profiles: {
-          test: {
-            bin: {},
-            'test.sh': 'file content'
-          }
+      profiles: {
+        test: {
+          bin: {},
+          'test.sh': 'file content'
         }
       }
     }
   }
 
   describe Dottie::Dotfile::DSL do
-    let(:profile_path) { '/home/dottie/profiles/test' }
+    let(:profile_path) { '/home/profiles/test' }
     let(:file_system) { SpecHelper::FileSystem.new.use(files) }
 
     it 'should allow a user to define commands for a specific shell' do
@@ -73,7 +71,7 @@ module Dottie
             source 'test.sh'
           end
         end
-        expect(dotfile.commands(:common)[0].options[:path]).to eql('/home/dottie/profiles/test/test.sh')
+        expect(dotfile.commands(:common)[0].options[:path]).to eql('/home/profiles/test/test.sh')
       end
 
       it 'should throw an error when given an invalid argument' do
@@ -114,7 +112,7 @@ module Dottie
             path_add 'bin'
           end
         end
-        expect(dotfile.commands(:common)[0].options[:path]).to eql('/home/dottie/profiles/test/bin')
+        expect(dotfile.commands(:common)[0].options[:path]).to eql('/home/profiles/test/bin')
       end
 
       it 'should throw an error when given an invalid argument' do
@@ -155,7 +153,7 @@ module Dottie
             fpath_add 'bin'
           end
         end
-        expect(dotfile.commands(:common)[0].options[:path]).to eql('/home/dottie/profiles/test/bin')
+        expect(dotfile.commands(:common)[0].options[:path]).to eql('/home/profiles/test/bin')
       end
 
       it 'should throw an error when given an invalid argument' do

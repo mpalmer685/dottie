@@ -10,7 +10,6 @@ require 'dottie/logger'
 files = {
   home: {
     dottie: {
-      profiles: {},
       repos: {},
       shells: {}
     }

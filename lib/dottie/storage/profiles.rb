@@ -20,9 +20,8 @@ module Dottie
         profile_location = File.join(@dottie_config.dotfile_path, 'profiles', profile_id)
         profile = Dottie::Models::Profile.new(source_path: source_location, id: profile_id)
 
-        return profile if @file_system.symlink?(profile_location)
+        return profile unless @profiles_settings.profile(profile_id).nil?
 
-        @file_system.symlink(profile_location, source_location)
         @profiles_settings.add_profile(profile)
       end
 
@@ -33,15 +32,12 @@ module Dottie
         profile_location = File.join(@dottie_config.dotfile_path, 'profiles', profile_id)
         profile = Dottie::Models::Profile.new(repo_id: repo_id, source_path: path, id: profile_id)
 
-        return profile if @file_system.symlink?(profile_location)
+        return profile unless @profiles_settings.profile(profile_id).nil?
 
-        @file_system.symlink(profile_location, source_location)
         @profiles_settings.add_profile(profile)
       end
 
       def uninstall(profile_id)
-        profile_location = File.join(@dottie_config.dotfile_path, 'profiles', profile_id)
-        @file_system.unlink(profile_location)
         @profiles_settings.remove_profile(profile_id)
       end
     end

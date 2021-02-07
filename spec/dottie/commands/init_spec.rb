@@ -22,7 +22,6 @@ describe Dottie::Commands::Init do
     it 'should create the folder structure in the dotfile dir' do
       expect(file_system.directory?('/home/dottie')).to be(true)
       expect(file_system.directory?('/home/dottie/repos')).to be(true)
-      expect(file_system.directory?('/home/dottie/profiles')).to be(true)
       expect(file_system.directory?('/home/dottie/shells')).to be(true)
     end
 

@@ -11,7 +11,7 @@ files = {
       }
     },
     dottie: {
-      profiles: {}
+      repos: {}
     }
   }
 }

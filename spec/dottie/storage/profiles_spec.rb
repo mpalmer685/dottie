@@ -8,7 +8,6 @@ require 'dottie/storage/profiles'
 files = {
   home: {
     dottie: {
-      profiles: {},
       repos: {},
       shells: {}
     }
@@ -40,32 +39,13 @@ describe Dottie::Storage::Profiles do
     expect(profile.source_path).to eql('/home/profiles/test')
     expect(profile.parent_id).to be_nil
     expect(profile.id).not_to be_nil
-    expect(profiles_settings.profile(profile.id)).not_to be_nil
-    expect(file_system.symlink?('/home/dottie/profiles/_home_profiles_test')).to be(true)
+    expect(profiles_settings.profile(profile.id)).to be == profile
   end
 
   context 'when a local profile is already installed' do
     before :each do
       profiles_settings.add_profile(
         Dottie::Models::Profile.new(source_path: '/home/profiles/test', id: '_home_profiles_test')
-      )
-
-      file_system.add(
-        {
-          home: {
-            dottie: {
-              profiles: {
-                _home_profiles_test: '@/home/profiles/test'
-              }
-            }
-          }
-        }
-      )
-    end
-
-    it 'should use the existing symlink' do
-      expect { subject.install_from_local('/home/profiles/test') }.not_to(
-        change { file_system.symlink?('/home/dottie/profiles/_home_profiles_test') }
       )
     end
 
@@ -100,7 +80,6 @@ describe Dottie::Storage::Profiles do
     expect(profile.parent_id).to be_nil
     expect(profile.id).not_to be_nil
     expect(profiles_settings.profile(profile.id)).not_to be_nil
-    expect(file_system.symlink?('/home/dottie/profiles/git__profile')).to be(true)
   end
 
   context 'when a remote profile is already installed' do
@@ -123,19 +102,10 @@ describe Dottie::Storage::Profiles do
                     Dotfile: ''
                   }
                 }
-              },
-              profiles: {
-                git__profile: '@/home/dottie/repos/git/profile'
               }
             }
           }
         }
-      )
-    end
-
-    it 'should use the existing symlink' do
-      expect { subject.install_from_repo('git','profile') }.not_to(
-        change { file_system.symlink?('/home/dottie/profiles/git__profile') }
       )
     end
 
@@ -151,20 +121,7 @@ describe Dottie::Storage::Profiles do
       Dottie::Models::Profile.new(source_path: '/home/profiles/test', id: '_home_profiles_test')
     )
 
-    file_system.add(
-      {
-        home: {
-          dottie: {
-            profiles: {
-              _home_profiles_test: '@/home/profiles/test'
-            }
-          }
-        }
-      }
-    )
-
     subject.uninstall('_home_profiles_test')
-    expect(file_system.exist?('/home/dottie/profiles/_home_profiles_test')).to be(false)
     expect(profiles_settings.profile('_home_profiles_test')).to be_nil
   end
 end

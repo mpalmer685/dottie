@@ -33,7 +33,7 @@ module Dottie
       end
 
       def create_folder_structure(dotfile_path)
-        %w[repos profiles shells].each do |folder|
+        %w[repos shells].each do |folder|
           @file_system.mkdir File.join(dotfile_path, folder)
         end
       end
