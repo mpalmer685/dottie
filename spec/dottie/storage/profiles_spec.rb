@@ -36,7 +36,7 @@ describe Dottie::Storage::Profiles do
 
     profile = subject.install_from_local('/home/profiles/test')
     expect(profile.repo_id).to be_nil
-    expect(profile.source_path).to eql('/home/profiles/test')
+    expect(profile.location).to eql('/home/profiles/test')
     expect(profile.parent_id).to be_nil
     expect(profile.id).not_to be_nil
     expect(profiles_settings.profile(profile.id)).to be == profile
@@ -45,7 +45,7 @@ describe Dottie::Storage::Profiles do
   context 'when a local profile is already installed' do
     before :each do
       profiles_settings.add_profile(
-        Dottie::Models::Profile.new(source_path: '/home/profiles/test', id: '_home_profiles_test')
+        Dottie::Models::Profile.new(location: '/home/profiles/test', id: '_home_profiles_test')
       )
     end
 
@@ -76,7 +76,7 @@ describe Dottie::Storage::Profiles do
 
     profile = subject.install_from_repo('git', 'profile')
     expect(profile.repo_id).to eql('git')
-    expect(profile.source_path).to eql('profile')
+    expect(profile.location).to eql('/home/dottie/repos/git/profile')
     expect(profile.parent_id).to be_nil
     expect(profile.id).not_to be_nil
     expect(profiles_settings.profile(profile.id)).not_to be_nil
@@ -88,7 +88,7 @@ describe Dottie::Storage::Profiles do
       profiles_settings.add_profile(
         Dottie::Models::Profile.new(
           repo_id: 'git',
-          source_path: 'profile',
+          location: '/home/dottie/repos/git/profile',
           id: 'git__profile'
         )
       )
@@ -118,7 +118,7 @@ describe Dottie::Storage::Profiles do
 
   it 'should uninstall an installed profile' do
     profiles_settings.add_profile(
-      Dottie::Models::Profile.new(source_path: '/home/profiles/test', id: '_home_profiles_test')
+      Dottie::Models::Profile.new(location: '/home/profiles/test', id: '_home_profiles_test')
     )
 
     subject.uninstall('_home_profiles_test')
