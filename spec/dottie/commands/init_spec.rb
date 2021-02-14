@@ -30,8 +30,7 @@ describe Dottie::Commands::Init do
     end
 
     it 'should create the initial config files' do
-      expect(file_system.file?('/home/config/dottie/dottie_config.yml')).to be(true)
-      expect(file_system.file?('/home/config/dottie/profiles_settings.yml')).to be(true)
+      expect(file_system.file?('/home/config/dottie/config.yml')).to be(true)
       expect(file_system.file?('/home/config/dottie/exec_cache.yml')).to be(true)
     end
   end

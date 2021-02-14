@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'dottie/models/config'
-require 'dottie/models/profiles_settings'
 require 'dottie/models/exec_cache'
 require 'dottie/file_system'
 require 'dottie/logger'
@@ -43,8 +42,7 @@ module Dottie
       end
 
       def write_config_files(dotfile_path)
-        Dottie::Models::Config.new(dotfile_path).save(@file_system, @os)
-        Dottie::Models::ProfilesSettings.new.save(@file_system, @os)
+        Dottie::Models::Config.new(dotfile_path: dotfile_path).save(@file_system, @os)
         Dottie::Models::ExecCache.new.save(@file_system, @os)
       end
     end
