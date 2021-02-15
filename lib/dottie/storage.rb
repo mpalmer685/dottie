@@ -17,8 +17,6 @@ module Dottie
       @exec_cache ||= load_model(Dottie::Models::ExecCache)
     end
 
-    private
-
     def load_model(model_class)
       model_class.load_yaml(@file_system, @os)
     end

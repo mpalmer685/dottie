@@ -215,7 +215,7 @@ module Dottie
               env 1
             end
           end
-        end.to raise_error(ArgumentError)
+        end.to raise_error(RuntimeError)
       end
     end
   end
