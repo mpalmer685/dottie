@@ -4,6 +4,7 @@ require 'dottie/models/config'
 require 'dottie/models/exec_cache'
 require 'dottie/models/profile'
 require 'dottie/models/repo'
+require 'dottie/models/shell_settings'
 require 'dottie/models/yaml_helpers'
 
 module Dottie
@@ -37,8 +38,13 @@ module Dottie
 
       def add_shell(shell_type, shell_settings)
         self.shells ||= {}
-        shell = self.shells[shell_type] || {}
+        shell = self.shells[shell_type] || ShellSettings.new
         shell.merge!(shell_settings)
+        self.shells[shell_type] = shell
+      end
+
+      def shell_settings(shell_type)
+        self.shells.nil? ? ShellSettings.new : self.shells[shell_type]
       end
     end
   end
