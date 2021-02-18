@@ -4,7 +4,7 @@ require 'dottie/models/yaml_helpers'
 
 module Dottie
   module Models
-    Repo = Struct.new(:url, :branch, :tag, :commit, :id, keyword_init: true) do
+    Repo = Struct.new(:url, :branch, :tag, :id, keyword_init: true) do
       include KeywordYaml
 
       def self.from_git(git_url, **definition)
@@ -21,16 +21,15 @@ module Dottie
       end
 
       def self.from_definition(definition)
-        url, branch, tag, commit = definition.values_at(:url, :branch, :tag, :commit)
-        id = build_id(url, branch, tag, commit)
+        url, branch, tag = definition.values_at(:url, :branch, :tag)
+        id = build_id(url, branch, tag)
         new(id: id, **definition)
       end
 
-      def self.build_id(url, branch, tag, commit)
+      def self.build_id(url, branch, tag)
         segments = [url]
         segments << "b#{branch}" if branch
         segments << "t#{tag}" if tag
-        segments << "c#{commit}" if commit
         segments.join('_').gsub(/\W/, '_')
       end
       private_class_method :build_id

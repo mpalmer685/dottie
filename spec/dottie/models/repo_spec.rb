@@ -6,7 +6,6 @@ describe Dottie::Models::Repo do
   it 'should generate an ID from a repo definition' do
     expect(described_class.from_definition(url: 'git').id).to eql('git')
     expect(described_class.from_definition(url: 'git', branch: 'a-branch').id).to eql('git_ba_branch')
-    expect(described_class.from_definition(url: 'git', commit: 'a-commit').id).to eql('git_ca_commit')
     expect(described_class.from_definition(url: 'git', tag: 'a-tag').id).to eql('git_ta_tag')
   end
 
@@ -14,7 +13,6 @@ describe Dottie::Models::Repo do
     expect(described_class.from_git('git').url).to eql('git')
     expect(described_class.from_git('git').id).to eql('git')
     expect(described_class.from_git('git', branch: 'a-branch').id).to eql('git_ba_branch')
-    expect(described_class.from_git('git', commit: 'a-commit').id).to eql('git_ca_commit')
     expect(described_class.from_git('git', tag: 'a-tag').id).to eql('git_ta_tag')
   end
 
