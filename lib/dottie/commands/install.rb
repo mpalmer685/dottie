@@ -4,8 +4,9 @@ require 'dottie/models/config'
 require 'dottie/dotfile'
 require 'dottie/file_system'
 require 'dottie/git'
-require 'dottie/os'
 require 'dottie/logger'
+require 'dottie/os'
+require 'dottie/storage'
 
 module Dottie
   module Commands
@@ -38,18 +39,14 @@ module Dottie
         process_dotfile(profile)
 
         @model_storage.save_model(@config)
+        @logger.success('Profile installed!')
       end
 
       private
 
       def get_installation(path, repo_definition)
-        if repo_definition.nil? || repo_definition.empty?
-          profile = local_profile(path)
-          repo = nil
-        else
-          repo = repo_from_options(repo_definition)
-          profile = remote_profile(repo.id, path)
-        end
+        repo = repo_from_options(repo_definition)
+        profile = repo.nil? ? local_profile(path) : remote_profile(repo.id, path)
         [profile, repo]
       end
 
@@ -83,11 +80,13 @@ module Dottie
         return unless @config.repo(repo.id).nil?
 
         clone_location = File.join(@config.dotfile_path, 'repos', repo.id)
+        @logger.info("Cloning repo #{repo}")
         @git.clone(repo, clone_location)
         @config.add_repo(repo)
       end
 
       def process_dotfile(profile)
+        @logger.info('Processing Dotfile')
         dotfile = Dotfile.from_profile(profile.location, @file_system)
         dotfile.shells.each_pair do |shell_type, settings|
           @config.add_shell(shell_type, settings)

@@ -33,6 +33,13 @@ module Dottie
         segments.join('_').gsub(/\W/, '_')
       end
       private_class_method :build_id
+
+      def to_s
+        segments = [url]
+        segments << "(@#{branch})" unless branch.nil?
+        segments << "(@#{tag})" unless tag.nil?
+        segments.join(" ")
+      end
     end
   end
 end

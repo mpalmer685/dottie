@@ -14,20 +14,21 @@ class DottieCLI
 
   def run
     program :name, 'dottie'
-    program :version, '0.0.1'
+    program :version, Dottie::VERSION
     program :description, 'A dotfiles manager'
 
-    init_command
-    reset_command
+    define_init_command
+    define_reset_command
+    define_install_command
 
     run!
   end
 
   private
 
-  def init_command
+  def define_init_command
     command :init do |c|
-      c.syntax = 'dottie init [install location]'
+      c.syntax = 'dottie init <install_location>'
       c.summary = 'Set up Dottie as your Dotfiles manager'
       c.example 'Set up Dottie in the default location (~/.dottie)', 'dottie init'
       c.example 'Set up Dottie at ~/.dotfiles', 'dottie init ~/.dotfiles'
@@ -38,12 +39,37 @@ class DottieCLI
     end
   end
 
-  def reset_command
+  def define_reset_command
     command :reset do |c|
       c.syntax = 'dottie reset'
       c.summary = 'Remove all Dottie files and settings'
       c.when_called do
         run_task Dottie::Commands::Reset
+      end
+    end
+  end
+
+  def define_install_command
+    command :install do |c|
+      c.syntax = 'dottie install [repo_options] <path_to_profile>'
+      c.summary = 'Install a local or remote profile'
+
+      c.example 'Install a profile from the local file system', 'dottie install ./profiles/my-profile'
+      c.example 'Install a profile from a git repo', 'dottie install --git https://my.git/repo my-profile'
+      c.example 'Install a profile from a github repo', 'dottie install --github user/repo my-profile'
+
+      c.option '--git GIT_URL', 'URL to git repo'
+      c.option '--github GITHUB_REPO', 'Github repo ID in the form "user/repo"'
+      c.option '--ssh', 'Use the ssh URL when cloning a Github repo'
+      c.option '--branch BRANCH', 'The git branch to check out'
+      c.option '--tag TAG', 'The git tag to check out'
+
+      c.when_called do |args, opts|
+        warn 'The "ssh" flag only affects the "github" option' if opts.ssh && opts.github.nil?
+        raise 'You should specify either --branch or --tag, but not both.' unless opts.branch.nil? || opts.tag.nil?
+        raise 'Please specify a path to the profile directory' if args.first.nil?
+
+        run_task Dottie::Commands::Install, args.first, opts.__hash__
       end
     end
   end
