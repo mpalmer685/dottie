@@ -4,60 +4,58 @@ require 'dottie/shell'
 
 module Dottie
   class FileSystem
-    class << self
-      def exist?(path)
-        file?(path) || directory?(path)
-      end
+    def initialize(shell = Dottie::Shell.new)
+      @shell = shell
+    end
 
-      def file?(path)
-        File.file?(path) && File.readable?(path)
-      end
+    def exist?(path)
+      file?(path) || directory?(path)
+    end
 
-      def directory?(path)
-        Dir.exist? path
-      end
+    def file?(path)
+      File.file?(path) && File.readable?(path)
+    end
 
-      def empty?(path)
-        Dir.empty? path
-      end
+    def directory?(path)
+      Dir.exist? path
+    end
 
-      def mkdir(path)
-        return if directory?(path)
+    def empty?(path)
+      Dir.empty? path
+    end
 
-        exit_code, output, = shell "mkdir -p \"#{path}\" 2>&1"
-        raise "Could not create directory #{path}: #{output}" unless exit_code.success?
-      end
+    def mkdir(path)
+      return if directory?(path)
 
-      def read_file(path)
-        return File.read(path) if file?(path)
+      raise "Could not create directory #{path}" if @shell.run!('mkdir -p', path).failure?
+    end
 
-        raise "Unable to read file at #{path}"
-      end
+    def read_file(path)
+      return File.read(path) if file?(path)
 
-      def write_file(path, content)
-        File.write path, content
-      end
+      raise "Unable to read file at #{path}"
+    end
 
-      def delete_file(path)
-        delete path
-      end
+    def write_file(path, content)
+      File.write path, content
+    end
 
-      def delete_directory(path)
-        delete path, recursive: true
-      end
+    def delete_file(path)
+      delete path
+    end
 
-      private
+    def delete_directory(path)
+      delete path, recursive: true
+    end
 
-      def shell(command, silent: false)
-        Dottie::Shell.shell(command, silent: silent)
-      end
+    private
 
-      def delete(path, recursive: false)
-        recursive = recursive ? '-R ' : ''
-        exit_code, output, = shell "rm #{recursive}-f \"#{path}\" 2>&1"
+    def delete(path, recursive: false)
+      args = ['-f']
+      args << '-R' if recursive
+      args << path
 
-        raise "Could not delete #{path}: #{output}" unless exit_code.success?
-      end
+      raise "Could not delete #{path}" if @shell.run!('rm', *args).failure?
     end
   end
 end

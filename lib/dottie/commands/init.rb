@@ -9,7 +9,7 @@ require 'dottie/os'
 module Dottie
   module Commands
     class Init
-      def initialize(file_system = Dottie::FileSystem, os = Dottie::OS.current, logger = Dottie::Logger.default)
+      def initialize(file_system = Dottie::FileSystem.new, os = Dottie::OS.current, logger = Dottie::Logger.default)
         @file_system = file_system
         @os = os
         @logger = logger

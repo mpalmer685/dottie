@@ -4,7 +4,7 @@ module Dottie
   class Storage
     attr_writer :config, :exec_cache
 
-    def initialize(file_system = Dottie::FileSystem, os = Dottie::OS.current)
+    def initialize(file_system = Dottie::FileSystem.new, os = Dottie::OS.current)
       @file_system = file_system
       @os = os
     end

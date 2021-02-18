@@ -11,10 +11,10 @@ module Dottie
   module Commands
     class Install
       def initialize(
-        model_storage,
-        file_system = Dottie::FileSystem,
+        model_storage = Dottie::Storage.new,
+        file_system = Dottie::FileSystem.new,
         git = Dottie::Git.new,
-        shell = Dottie::Shell,
+        shell = Dottie::Shell.new,
         logger = Dottie::Logger.default
       )
         @model_storage = model_storage

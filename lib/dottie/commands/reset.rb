@@ -12,7 +12,7 @@ module Dottie
   module Commands
     class Reset
       def initialize(
-        file_system = Dottie::FileSystem,
+        file_system = Dottie::FileSystem.new,
         os = Dottie::OS.current,
         logger = Dottie::Logger.default,
         prompt = TTY::Prompt.new
