@@ -27,7 +27,7 @@ module Dottie
         @config = @model_storage.config
       end
 
-      def run(path, repo_definition = nil)
+      def run(path, repo_definition = {})
         profile, repo = get_installation(path, repo_definition)
 
         unless @config.profile(profile.id).nil?
@@ -87,7 +87,7 @@ module Dottie
 
       def process_dotfile(profile)
         @logger.info('Processing Dotfile')
-        dotfile = Dotfile.from_profile(profile.location, @file_system)
+        dotfile = Dotfile.from_profile(profile.location)
         dotfile.shells.each_pair do |shell_type, settings|
           @config.add_shell(shell_type, settings)
         end

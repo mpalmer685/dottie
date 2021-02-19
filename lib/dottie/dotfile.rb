@@ -19,22 +19,29 @@ module Dottie
       end
     end
 
-    def self.from_profile(profile_path, file_system)
+    def self.from_profile(
+      profile_path,
+      file_system = Dottie::FileSystem.new,
+      shell = Dottie::Shell.new,
+      logger = Dottie::Logger.default
+    )
       dotfile_path = File.join(profile_path, 'Dotfile')
       raise "No Dotfile found in #{profile_path}" unless file_system.file?(dotfile_path)
 
       contents = file_system.read_file(dotfile_path)
 
-      new(profile_path, file_system) do
+      new(profile_path, file_system, shell, logger) do
         # rubocop:disable Security/Eval
         eval(contents, nil, dotfile_path)
         # rubocop:enable Security/Eval
       end
     end
 
-    def initialize(profile_path, file_system, &block)
+    def initialize(profile_path, file_system, shell, logger, &block)
       @profile_path = profile_path
       @file_system = file_system
+      @shell = shell
+      @logger = logger
       @shells = {}
 
       return unless block

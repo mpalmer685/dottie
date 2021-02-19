@@ -32,15 +32,15 @@ describe Dottie::Commands::Install do
     storage.exec_cache = exec_cache
     storage
   end
-  let(:git) { object_double(Dottie::Git.new) }
-  let(:shell) { object_double(Dottie::Shell) }
+  let(:git) { instance_double(Dottie::Git) }
+  let(:shell) { instance_double(Dottie::Shell) }
 
   # Mocks
   let(:parser) { class_double('Dottie::Dotfile').as_stubbed_const }
   let(:dotfile) { instance_double('Dottie::Dotfile') }
 
   it 'should install a local profile' do
-    expect(parser).to receive(:from_profile).with('/home/profiles/test', anything).and_return(dotfile)
+    expect(parser).to receive(:from_profile).with('/home/profiles/test').and_return(dotfile)
     expect(dotfile).to receive(:shells).and_return({})
 
     subject.run('/home/profiles/test')
@@ -56,7 +56,7 @@ describe Dottie::Commands::Install do
   end
 
   it 'should install a profile from a remote repo' do
-    expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test', anything).and_return(dotfile)
+    expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test').and_return(dotfile)
     expect(git).to receive(:clone).with(instance_of(Dottie::Models::Repo), '/home/dottie/repos/git')
     expect(dotfile).to receive(:shells).and_return({})
 
@@ -66,7 +66,7 @@ describe Dottie::Commands::Install do
   it 'should install a profile from a remote repo that was already cloned' do
     config.add_repo(Dottie::Models::Repo.from_git('git'))
 
-    expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test', anything).and_return(dotfile)
+    expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test').and_return(dotfile)
     expect(git).not_to receive(:clone)
     expect(dotfile).to receive(:shells).and_return({})
 
@@ -87,7 +87,7 @@ describe Dottie::Commands::Install do
   end
 
   it 'should save installed repos and profiles to the config file' do
-    expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test', anything).and_return(dotfile)
+    expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test').and_return(dotfile)
     expect(git).to receive(:clone).with(instance_of(Dottie::Models::Repo), '/home/dottie/repos/git')
     expect(dotfile).to receive(:shells).and_return(
       {
