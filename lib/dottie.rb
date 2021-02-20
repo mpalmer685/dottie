@@ -2,6 +2,7 @@
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
+require 'dottie/commands/generate'
 require 'dottie/commands/init'
 require 'dottie/commands/install'
 require 'dottie/commands/reset'

@@ -44,7 +44,9 @@ module Dottie
       end
 
       def shell_settings(shell_type)
-        self.shells.nil? ? ShellSettings.new : self.shells[shell_type]
+        return ShellSettings.new if shells.nil? || !shells.key?(shell_type)
+
+        shells[shell_type]
       end
     end
   end

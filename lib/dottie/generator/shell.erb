@@ -1,0 +1,41 @@
+<% env.each { |name, value| -%>
+export <%= name %>="<%= value %>"
+
+<% } -%>
+<% unless path_add.empty? -%>
+env_path_add() {
+  if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
+    PATH="$1${PATH:+":$PATH"}"
+  fi
+}
+
+  <% path_add.each { |path| -%>
+env_path_add "<%= path %>"
+  <% } -%>
+
+unset env_path_add
+
+<% end -%>
+<% source.each { |path| -%>
+source "<%= path %>"
+
+<% } -%>
+<% unless fpath_add.empty? -%>
+env_fpath_add() {
+  if [[ -d "$1" ]]; then
+    fpath=($1 $fpath)
+    autoload -U "$1/*(:t)"
+  fi
+}
+
+  <% fpath_add.each { |path| -%>
+env_fpath_add "<%= path %>"
+  <% } -%>
+
+unset env_fpath_add
+
+<% end -%>
+# Override global variables in a ~/.localrc file
+if [[ -a ~/.localrc ]]; then
+  source ~/.localrc
+fi

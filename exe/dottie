@@ -20,6 +20,7 @@ class DottieCLI
     define_init_command
     define_reset_command
     define_install_command
+    define_generate_command
 
     run!
   end
@@ -67,9 +68,22 @@ class DottieCLI
       c.when_called do |args, opts|
         warn 'The "ssh" flag only affects the "github" option' if opts.ssh && opts.github.nil?
         raise 'You should specify either --branch or --tag, but not both.' unless opts.branch.nil? || opts.tag.nil?
-        raise 'Please specify a path to the profile directory' if args.first.nil?
+        raise 'Please specify a path to the profile directory.' if args.first.nil?
 
         run_task Dottie::Commands::Install, args.first, opts.__hash__
+      end
+    end
+  end
+
+  def define_generate_command
+    command :generate do |c|
+      c.syntax = 'dottie generate <shell>'
+      c.summary = 'Generate a shell startup for the given shell'
+      c.example 'Generate a bash startup file', 'dottie generate bash'
+      c.when_called do |args, _|
+        raise 'Please specify a shell to generate.' if args.first.nil?
+
+        run_task Dottie::Commands::Generate, args.first.to_sym
       end
     end
   end

@@ -15,6 +15,10 @@ module Dottie
         @environment_vars.merge!(other.environment_vars)
       end
 
+      def merge(other)
+        self.class.new(@commands + other.commands, @environment_vars.merge(other.environment_vars))
+      end
+
       def ==(other)
         @commands == other.commands && @environment_vars == other.environment_vars
       end
