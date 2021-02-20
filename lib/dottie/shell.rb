@@ -8,15 +8,13 @@ module Dottie
       @cmd = cmd
     end
 
-    def run(command, *args, silent: false, cwd: nil)
-      opts = {}
+    def run(command, *args, silent: false, cwd: nil, **opts)
       opts[:chdir] = File.expand_path(cwd) unless cwd.nil?
       opts[:out] = opts[:err] = '/dev/null' if silent
       @cmd.run(command, *args, opts)
     end
 
-    def run!(command, *args, silent: false, cwd: nil)
-      opts = {}
+    def run!(command, *args, silent: false, cwd: nil, **opts)
       opts[:chdir] = File.expand_path(cwd) unless cwd.nil?
       opts[:out] = opts[:err] = '/dev/null' if silent
       @cmd.run!(command, *args, opts)

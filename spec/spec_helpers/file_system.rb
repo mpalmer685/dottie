@@ -72,6 +72,10 @@ module SpecHelper
       file?(path) && get_from_path(path).start_with?('@')
     end
 
+    def symlink_path(symlink)
+      read_file(symlink).gsub(/^@/, '')
+    end
+
     def symlink(from, to)
       write_file(from, "@#{to}")
     end

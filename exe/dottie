@@ -21,6 +21,7 @@ class DottieCLI
     define_reset_command
     define_install_command
     define_generate_command
+    define_link_command
 
     run!
   end
@@ -84,6 +85,21 @@ class DottieCLI
         raise 'Please specify a shell to generate.' if args.first.nil?
 
         run_task Dottie::Commands::Generate, args.first.to_sym
+      end
+    end
+  end
+
+  def define_link_command
+    command :link do |c|
+      c.syntax = 'dottie link <shell> <file_path>'
+      c.summary = 'Link a shell startup script'
+      c.example 'Link the bash startup script to .bash_profile', 'dottie link bash ~/.bash_profile'
+      c.example 'Link the zsh startup script to .zshrc', 'dottie link zsh ~/.zshrc'
+      c.option '-f', '--force', 'Overwrite an existing symlink'
+      c.when_called do |args, opts|
+        raise 'Please specify both a shell type and a path to link.' if args.size < 2
+
+        run_task Dottie::Commands::Link, *args, **opts
       end
     end
   end

@@ -48,6 +48,28 @@ module Dottie
       delete path, recursive: true
     end
 
+    def symlink?(symlink)
+      File.symlink?(symlink)
+    end
+
+    def symlink_path(symlink)
+      out, = @shell.run('readlink', symlink)
+      out.strip
+    end
+
+    def symlink(from, to)
+      if symlink?(from)
+        retry_symlink(from, to) unless symlink_path(from) == to
+      elsif file?(from)
+        raise "File #{from} exists in place of symlink."
+      elsif directory?(from)
+        raise "Directory #{from} exists in place of symlink."
+      else
+        result = @shell.run!('ln -s', to, from)
+        raise "Couldn't create symlink at #{from} to #{to}" unless result.success?
+      end
+    end
+
     private
 
     def delete(path, recursive: false)
@@ -56,6 +78,11 @@ module Dottie
       args << path
 
       raise "Could not delete #{path}" if @shell.run!('rm', *args).failure?
+    end
+
+    def retry_symlink(from, to)
+      rm from
+      symlink from, to
     end
   end
 end
