@@ -62,6 +62,15 @@ module Dottie
       @shells[shell_type]&.environment_vars || {}
     end
 
+    def post_install!
+      if @post_install_callback
+        @post_install_callback.call
+        true
+      else
+        false
+      end
+    end
+
     private
 
     def full_file_path(file_path)

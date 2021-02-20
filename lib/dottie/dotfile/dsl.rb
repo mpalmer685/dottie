@@ -14,6 +14,10 @@ module Dottie
         @shells[shell_type] = Shell.new(@shell_entries, @shell_env)
       end
 
+      def post_install(&block)
+        @post_install_callback = block
+      end
+
       # @!group Shell DSL
 
       def source(relative_path)

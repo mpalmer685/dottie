@@ -42,6 +42,7 @@ describe Dottie::Commands::Install do
   it 'should install a local profile' do
     expect(parser).to receive(:from_profile).with('/home/profiles/test').and_return(dotfile)
     expect(dotfile).to receive(:shells).and_return({})
+    expect(dotfile).to receive(:post_install!).and_return(false)
 
     subject.run('/home/profiles/test')
   end
@@ -59,6 +60,7 @@ describe Dottie::Commands::Install do
     expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test').and_return(dotfile)
     expect(git).to receive(:clone).with(instance_of(Dottie::Models::Repo), '/home/dottie/repos/git')
     expect(dotfile).to receive(:shells).and_return({})
+    expect(dotfile).to receive(:post_install!).and_return(false)
 
     subject.run('test', url: 'git')
   end
@@ -69,6 +71,7 @@ describe Dottie::Commands::Install do
     expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test').and_return(dotfile)
     expect(git).not_to receive(:clone)
     expect(dotfile).to receive(:shells).and_return({})
+    expect(dotfile).to receive(:post_install!).and_return(false)
 
     subject.run('test', url: 'git')
   end
@@ -97,6 +100,7 @@ describe Dottie::Commands::Install do
         )
       }
     )
+    expect(dotfile).to receive(:post_install!).and_return(false)
 
     subject.run('test', url: 'git')
 

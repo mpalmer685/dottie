@@ -220,5 +220,31 @@ module Dottie
         end.to raise_error(RuntimeError)
       end
     end
+
+    describe 'post_install' do
+      it 'should allow the user to define a post-install hook' do
+        yielded = nil
+        Dotfile.new(profile_path, file_system, shell, logger) do
+          post_install do
+            yielded = :dottie
+          end
+        end.post_install!
+        expect(yielded).to eq(:dottie)
+      end
+
+      it 'should allow the user to define other functions that can be called from the post-install hook' do
+        yielded = nil
+        Dotfile.new(profile_path, file_system, shell, logger) do
+          def dottie
+            :dottie
+          end
+
+          post_install do
+            yielded = dottie
+          end
+        end.post_install!
+        expect(yielded).to eq(:dottie)
+      end
+    end
   end
 end
