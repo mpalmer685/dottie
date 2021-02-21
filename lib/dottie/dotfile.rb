@@ -23,8 +23,9 @@ module Dottie
 
     def self.from_profile(
       profile,
-      exec_cache,
+      exec_cache = Dottie::Storage.new.exec_cache,
       file_system = Dottie::FileSystem.new,
+      os = Dottie::OS.current,
       shell = Dottie::Shell.new,
       logger = Dottie::Logger.default
     )
@@ -33,17 +34,18 @@ module Dottie
 
       contents = file_system.read_file(dotfile_path)
 
-      new(profile, exec_cache, file_system, shell, logger) do
+      new(profile, exec_cache, file_system, os, shell, logger) do
         # rubocop:disable Security/Eval
         eval(contents, nil, dotfile_path)
         # rubocop:enable Security/Eval
       end
     end
 
-    def initialize(profile, exec_cache, file_system, shell, logger, &block)
+    def initialize(profile, exec_cache, file_system, os, shell, logger, &block)
       @profile = profile
       @exec_cache = exec_cache
       @file_system = file_system
+      @os = os
       @shell = shell
       @logger = logger
       @shells = {}

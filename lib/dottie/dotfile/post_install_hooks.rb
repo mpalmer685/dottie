@@ -3,7 +3,6 @@
 module Dottie
   class Dotfile
     module PostInstallHooks
-
       # File System
 
       def symlink?(symlink)
@@ -51,6 +50,28 @@ module Dottie
 
       def command_exists?(command)
         @shell.command_exists?(command)
+      end
+
+      def brew_bundle(brewfile = 'Brewfile')
+        return unless @os.macos?
+
+        brewfile_path = File.join(@profile.location, brewfile)
+        raise "No Brewfile at #{brewfile_path}." unless @file_system.file?(brewfile_path)
+
+        install_homebrew unless command_exists?('brew')
+        @logger.info("Installing brew dependencies from Brewfile at #{brewfile_path}") do
+          @shell.run('brew update')
+          @shell.run('brew bundle', '--no-lock', '--file', brewfile_path)
+          @logger.success('Done!')
+        end
+      end
+
+      def install_homebrew
+        homebrew_install_location = 'https://raw.githubusercontent.com/Homebrew/install/master/install.sh'
+        @logger.info('Homebrew has not been installed. Installing now.') do
+          @shell.run(%(/bin/bash -c "$(curl -fsSL #{homebrew_install_location})"))
+          @logger.success('Homebrew installed!')
+        end
       end
     end
   end

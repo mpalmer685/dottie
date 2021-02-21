@@ -18,11 +18,12 @@ module Dottie
     let(:profile) { Dottie::Models::Profile.new(location: '/home/profiles/test') }
     let(:exec_cache) { Dottie::Models::ExecCache.new }
     let(:file_system) { SpecHelper::FileSystem.new.use(files) }
+    let(:os) { SpecHelper::OS.new.use(:macos, '/home/config') }
     let(:shell) { instance_double(Dottie::Shell) }
     let(:logger) { Dottie::Logger.silent }
 
     it 'should allow a user to define commands for a specific shell' do
-      dotfile = Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+      dotfile = Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
         shell :bash do
           source 'test.sh'
         end
@@ -31,7 +32,7 @@ module Dottie
     end
 
     it 'should allow a user to define commands for different shells' do
-      dotfile = Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+      dotfile = Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
         shell do
           source 'test.sh'
         end
@@ -47,7 +48,7 @@ module Dottie
 
     it 'should raise an error if a shell is defined more than once' do
       expect do
-        Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+        Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
           shell :bash do
             source 'test.sh'
           end
@@ -61,7 +62,7 @@ module Dottie
 
     it 'should raise an error if no block is defined' do
       expect do
-        Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+        Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
           shell
         end
       end.to raise_error(RuntimeError)
@@ -69,7 +70,7 @@ module Dottie
 
     describe 'source command' do
       it 'should support the source command' do
-        dotfile = Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+        dotfile = Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
           shell do
             source 'test.sh'
           end
@@ -79,7 +80,7 @@ module Dottie
 
       it 'should throw an error when given an invalid argument' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               source 1
             end
@@ -89,7 +90,7 @@ module Dottie
 
       it 'should throw an error if the file does not exist' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               source 'missing'
             end
@@ -99,7 +100,7 @@ module Dottie
 
       it 'should throw an error if the given path is a directory' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               source 'bin'
             end
@@ -110,7 +111,7 @@ module Dottie
 
     describe 'path_add command' do
       it 'should support the path_add command' do
-        dotfile = Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+        dotfile = Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
           shell do
             path_add 'bin'
           end
@@ -120,7 +121,7 @@ module Dottie
 
       it 'should throw an error when given an invalid argument' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               path_add 1
             end
@@ -130,7 +131,7 @@ module Dottie
 
       it 'should throw an error if the directory does not exist' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               path_add 'missing'
             end
@@ -140,7 +141,7 @@ module Dottie
 
       it 'should throw an error if the given path is not a directory' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               path_add 'test.sh'
             end
@@ -151,7 +152,7 @@ module Dottie
 
     describe 'fpath_add command' do
       it 'should support the fpath_add command' do
-        dotfile = Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+        dotfile = Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
           shell do
             fpath_add 'bin'
           end
@@ -161,7 +162,7 @@ module Dottie
 
       it 'should throw an error when given an invalid argument' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               fpath_add 1
             end
@@ -171,7 +172,7 @@ module Dottie
 
       it 'should throw an error if the directory does not exist' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               fpath_add 'missing'
             end
@@ -181,7 +182,7 @@ module Dottie
 
       it 'should throw an error if the given path is not a directory' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               fpath_add 'test.sh'
             end
@@ -192,7 +193,7 @@ module Dottie
 
     describe 'env command' do
       it 'should support the env command' do
-        dotfile = Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+        dotfile = Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
           shell do
             env VAR_1: 'test_1',
                 VAR_2: 'test_2'
@@ -202,7 +203,7 @@ module Dottie
       end
 
       it 'should merge variables when called multiple times' do
-        dotfile = Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+        dotfile = Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
           shell do
             env VAR_1: 'test_1'
             env VAR_2: 'test_2'
@@ -213,7 +214,7 @@ module Dottie
 
       it 'should throw an error when given an invalid argument' do
         expect do
-          Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               env 1
             end
@@ -225,7 +226,7 @@ module Dottie
     describe 'post_install' do
       it 'should allow the user to define a post-install hook' do
         yielded = nil
-        Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+        Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
           post_install do
             yielded = :dottie
           end
@@ -235,7 +236,7 @@ module Dottie
 
       it 'should allow the user to define other functions that can be called from the post-install hook' do
         yielded = nil
-        Dotfile.new(profile, exec_cache, file_system, shell, logger) do
+        Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
           def dottie
             :dottie
           end
