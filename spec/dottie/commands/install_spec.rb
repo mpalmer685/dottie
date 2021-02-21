@@ -3,6 +3,10 @@
 require 'dottie/commands/install'
 require 'dottie/storage'
 
+RSpec::Matchers.define :profile_at do |location|
+  match { |actual| (actual.is_a? Dottie::Models::Profile) && (actual.location == location) }
+end
+
 files = {
   home: {
     dottie: {
@@ -40,9 +44,9 @@ describe Dottie::Commands::Install do
   let(:dotfile) { instance_double('Dottie::Dotfile') }
 
   it 'should install a local profile' do
-    expect(parser).to receive(:from_profile).with('/home/profiles/test').and_return(dotfile)
+    expect(parser).to receive(:from_profile).with(profile_at('/home/profiles/test'), anything).and_return(dotfile)
     expect(dotfile).to receive(:shells).and_return({})
-    expect(dotfile).to receive(:post_install!).and_return(false)
+    expect(dotfile).to receive(:post_install?).and_return(false)
 
     subject.run('/home/profiles/test')
   end
@@ -57,10 +61,12 @@ describe Dottie::Commands::Install do
   end
 
   it 'should install a profile from a remote repo' do
-    expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test').and_return(dotfile)
+    expect(parser).to receive(:from_profile)
+      .with(profile_at('/home/dottie/repos/git/test'), anything)
+      .and_return(dotfile)
     expect(git).to receive(:clone).with(instance_of(Dottie::Models::Repo), '/home/dottie/repos/git')
     expect(dotfile).to receive(:shells).and_return({})
-    expect(dotfile).to receive(:post_install!).and_return(false)
+    expect(dotfile).to receive(:post_install?).and_return(false)
 
     subject.run('test', url: 'git')
   end
@@ -68,10 +74,12 @@ describe Dottie::Commands::Install do
   it 'should install a profile from a remote repo that was already cloned' do
     config.add_repo(Dottie::Models::Repo.from_git('git'))
 
-    expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test').and_return(dotfile)
+    expect(parser).to receive(:from_profile)
+      .with(profile_at('/home/dottie/repos/git/test'), anything)
+      .and_return(dotfile)
     expect(git).not_to receive(:clone)
     expect(dotfile).to receive(:shells).and_return({})
-    expect(dotfile).to receive(:post_install!).and_return(false)
+    expect(dotfile).to receive(:post_install?).and_return(false)
 
     subject.run('test', url: 'git')
   end
@@ -90,7 +98,9 @@ describe Dottie::Commands::Install do
   end
 
   it 'should save installed repos and profiles to the config file' do
-    expect(parser).to receive(:from_profile).with('/home/dottie/repos/git/test').and_return(dotfile)
+    expect(parser).to receive(:from_profile)
+      .with(profile_at('/home/dottie/repos/git/test'), anything)
+      .and_return(dotfile)
     expect(git).to receive(:clone).with(instance_of(Dottie::Models::Repo), '/home/dottie/repos/git')
     expect(dotfile).to receive(:shells).and_return(
       {
@@ -100,7 +110,7 @@ describe Dottie::Commands::Install do
         )
       }
     )
-    expect(dotfile).to receive(:post_install!).and_return(false)
+    expect(dotfile).to receive(:post_install?).and_return(false)
 
     subject.run('test', url: 'git')
 

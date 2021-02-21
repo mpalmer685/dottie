@@ -22,38 +22,40 @@ module Dottie
     end
 
     def self.from_profile(
-      profile_path,
+      profile,
+      exec_cache,
       file_system = Dottie::FileSystem.new,
       shell = Dottie::Shell.new,
       logger = Dottie::Logger.default
     )
-      dotfile_path = File.join(profile_path, 'Dotfile')
-      raise "No Dotfile found in #{profile_path}" unless file_system.file?(dotfile_path)
+      dotfile_path = File.join(profile.location, 'Dotfile')
+      raise "No Dotfile found in #{profile.location}" unless file_system.file?(dotfile_path)
 
       contents = file_system.read_file(dotfile_path)
 
-      new(profile_path, file_system, shell, logger) do
+      new(profile, exec_cache, file_system, shell, logger) do
         # rubocop:disable Security/Eval
         eval(contents, nil, dotfile_path)
         # rubocop:enable Security/Eval
       end
     end
 
-    def initialize(profile_path, file_system, shell, logger, &block)
-      @profile_path = profile_path
+    def initialize(profile, exec_cache, file_system, shell, logger, &block)
+      @profile = profile
+      @exec_cache = exec_cache
       @file_system = file_system
       @shell = shell
       @logger = logger
       @shells = {}
 
-      return unless block
+      process(block) if block
+    end
 
-      begin
-        instance_eval(&block)
-      rescue Exception => e # rubocop:disable Lint/RescueException
-        error_msg = "Invalid Dotfile: #{e.message}"
-        raise RuntimeError, error_msg, e.backtrace
-      end
+    def process(block)
+      instance_eval(&block)
+    rescue Exception => e # rubocop:disable Lint/RescueException
+      error_msg = "Invalid Dotfile: #{e.message}"
+      raise RuntimeError, error_msg, e.backtrace
     end
 
     def commands(shell_type)
@@ -80,7 +82,7 @@ module Dottie
     private
 
     def full_file_path(file_path)
-      File.join @profile_path, file_path
+      File.join @profile.location, file_path
     end
   end
 end
