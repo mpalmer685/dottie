@@ -37,15 +37,22 @@ module Dottie
       # Shell
 
       def exec(cmd, once: false)
-        @shell.run(cmd, cwd: @profile.location)
+        return if once && @exec_cache.contain?(@profile, cmd)
+
+        @exec_cache.add_command(@profile, cmd) if @shell.run!(cmd, cwd: @profile.location).success?
       end
 
       def sudo(cmd, once: false)
-        @shell.sudo(cmd, cwd: @profile.location)
+        return if once && @exec_cache.contain?(@profile, cmd)
+
+        @exec_cache.add_command(@profile, cmd) if @shell.sudo!(cmd, cwd: @profile.location).success?
       end
 
       def exec_file(path, once: false)
-        @shell.exec_file(File.join(@profile.location, path))
+        file_location = File.join(@profile.location, path)
+        return if once && @exec_cache.contain?(@profile, file_location)
+
+        @exec_cache.add_command(@profile, file_location) if @shell.exec_file!(file_location).success?
       end
 
       def command_exists?(command)

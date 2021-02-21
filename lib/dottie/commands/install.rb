@@ -39,6 +39,7 @@ module Dottie
         process_dotfile(profile)
 
         @model_storage.save_model(@config)
+        @model_storage.save_model(@model_storage.exec_cache)
         @logger.success('Profile installed!')
       end
 
