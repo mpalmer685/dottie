@@ -36,8 +36,7 @@ module Dottie
         end
 
         install_profile(profile, repo)
-        dotfile = process_dotfile(profile)
-        run_post_install(dotfile)
+        process_dotfile(profile)
 
         @model_storage.save_model(@config)
         @logger.success('Profile installed!')
@@ -87,21 +86,23 @@ module Dottie
       end
 
       def process_dotfile(profile)
-        @logger.info('Processing Dotfile')
-        dotfile = Dotfile.from_profile(profile.location)
-        dotfile.shells.each_pair do |shell_type, settings|
-          @config.add_shell(shell_type, settings)
+        @logger.info('Processing Dotfile') do
+          dotfile = Dotfile.from_profile(profile.location)
+          dotfile.shells.each_pair do |shell_type, settings|
+            @config.add_shell(shell_type, settings)
+          end
+          run_post_install(dotfile)
         end
-        dotfile
       end
 
       def run_post_install(dotfile)
-        @logger.info('Running post-install hooks...')
-        if dotfile.post_install!
-          @logger.success('Done!')
-        else
-          @logger.info('No post-install hook defined.')
+        return unless dotfile.post_install?
+
+        @logger.info('Running post-install hooks...') do
+          dotfile.post_install!
         end
+
+        @logger.success('Done!')
       end
     end
   end

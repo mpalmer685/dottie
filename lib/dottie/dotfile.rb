@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require 'dottie/dotfile/dsl'
+require 'dottie/dotfile/post_install_hooks'
 
 module Dottie
   class Dotfile
     attr_reader :shells
 
     include Dottie::Dotfile::DSL
+    include Dottie::Dotfile::PostInstallHooks
 
     Shell = Struct.new(:commands, :environment_vars)
 
@@ -60,6 +62,10 @@ module Dottie
 
     def environment_vars(shell_type)
       @shells[shell_type]&.environment_vars || {}
+    end
+
+    def post_install?
+      !@post_install_callback.nil?
     end
 
     def post_install!
