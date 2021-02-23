@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require 'dottie/template'
+
 module Dottie
   module Generator
-    class ShellContext
+    class ShellContext < Dottie::Template::Context
       def initialize(shell_settings)
         @settings = shell_settings.commands.group_by(&:type)
         @settings[:env] = Array(shell_settings.environment_vars)
@@ -22,10 +24,6 @@ module Dottie
 
       def source
         settings_paths(:source)
-      end
-
-      def get_binding
-        binding
       end
 
       private
