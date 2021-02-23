@@ -119,31 +119,20 @@ module Dottie
         expect(dotfile.commands(:common)[0].options[:path]).to eql('/home/profiles/test/bin')
       end
 
+      it 'should support adding a path in the home folder' do
+        dotfile = Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
+          shell do
+            path_add '~/bin'
+          end
+        end
+        expect(dotfile.commands(:common)[0].options[:path]).to eql("#{ENV['HOME']}/bin")
+      end
+
       it 'should throw an error when given an invalid argument' do
         expect do
           Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               path_add 1
-            end
-          end
-        end.to raise_error(RuntimeError)
-      end
-
-      it 'should throw an error if the directory does not exist' do
-        expect do
-          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
-            shell do
-              path_add 'missing'
-            end
-          end
-        end.to raise_error(RuntimeError)
-      end
-
-      it 'should throw an error if the given path is not a directory' do
-        expect do
-          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
-            shell do
-              path_add 'test.sh'
             end
           end
         end.to raise_error(RuntimeError)
@@ -165,26 +154,6 @@ module Dottie
           Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
             shell do
               fpath_add 1
-            end
-          end
-        end.to raise_error(RuntimeError)
-      end
-
-      it 'should throw an error if the directory does not exist' do
-        expect do
-          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
-            shell do
-              fpath_add 'missing'
-            end
-          end
-        end.to raise_error(RuntimeError)
-      end
-
-      it 'should throw an error if the given path is not a directory' do
-        expect do
-          Dotfile.new(profile, exec_cache, file_system, os, shell, logger) do
-            shell do
-              fpath_add 'test.sh'
             end
           end
         end.to raise_error(RuntimeError)

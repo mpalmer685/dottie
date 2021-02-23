@@ -34,9 +34,6 @@ module Dottie
         raise "Path (#{relative_path.inspect}) should be a String object" unless relative_path.is_a? String
 
         file_path = full_file_path relative_path
-        raise "Directory does not exist at path #{file_path}" unless @file_system.exist?(file_path)
-        raise "#{file_path} is not a directory" unless @file_system.directory?(file_path)
-
         @shell_entries << Entry.new(:path_add, path: file_path)
       end
 
@@ -44,9 +41,6 @@ module Dottie
         raise "Path (#{relative_path.inspect}) should be a String object" unless relative_path.is_a? String
 
         file_path = full_file_path relative_path
-        raise "Directory does not exist at path #{file_path}" unless @file_system.exist?(file_path)
-        raise "#{file_path} is not a directory" unless @file_system.directory?(file_path)
-
         @shell_entries << Entry.new(:fpath_add, path: file_path)
       end
 
