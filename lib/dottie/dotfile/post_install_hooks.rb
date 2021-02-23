@@ -49,7 +49,7 @@ module Dottie
       end
 
       def exec_file(path, once: false)
-        file_location = File.join(@profile.location, path)
+        file_location = File.expand_path(path, @profile.location)
         return if once && @exec_cache.contain?(@profile, file_location)
 
         @exec_cache.add_command(@profile, file_location) if @shell.exec_file!(file_location).success?
@@ -62,7 +62,7 @@ module Dottie
       def brew_bundle(brewfile = 'Brewfile')
         return unless @os.macos?
 
-        brewfile_path = File.join(@profile.location, brewfile)
+        brewfile_path = File.expand_path(brewfile, @profile.location)
         raise "No Brewfile at #{brewfile_path}." unless @file_system.file?(brewfile_path)
 
         install_homebrew unless command_exists?('brew')

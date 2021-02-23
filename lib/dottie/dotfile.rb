@@ -84,7 +84,7 @@ module Dottie
     private
 
     def full_file_path(file_path)
-      File.join @profile.location, file_path
+      File.expand_path(file_path, @profile.location)
     end
   end
 end
