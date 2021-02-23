@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'dottie/dotfile/profile_context'
+require 'dottie/template'
+
 module Dottie
   class Dotfile
     module PostInstallHooks
@@ -19,6 +22,19 @@ module Dottie
 
       def mkdir(path)
         @file_system.mkdir(path)
+      end
+
+      def erb(file_location, output_path = nil)
+        if output_path.nil?
+          output_file_name = ".#{File.basename(file_location, '.erb')}"
+          output_path = File.join(ENV['HOME'], output_file_name)
+        end
+
+        context = ProfileContext.new(@profile)
+        output = Dottie::Template.new(@file_system).render(full_file_path(file_location), context)
+        return if @file_system.file?(output_path) && @file_system.read_file(output_path) == output
+
+        @file_system.write_file(output_path, output)
       end
 
       # Logging
