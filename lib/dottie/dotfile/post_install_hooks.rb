@@ -16,8 +16,12 @@ module Dottie
         @file_system.symlink_path(symlink)
       end
 
-      def symlink(from, to)
-        @file_system.symlink(from, to)
+      def symlink(from, to: nil)
+        if to.nil?
+          output_file_name = ".#{File.basename(from)}"
+          to = File.join(ENV['HOME'], output_file_name)
+        end
+        @file_system.symlink(full_file_path(from), to)
       end
 
       def mkdir(path)
@@ -65,7 +69,7 @@ module Dottie
       end
 
       def exec_file(path, once: false)
-        file_location = File.expand_path(path, @profile.location)
+        file_location = full_file_path(path)
         return if once && @exec_cache.contain?(@profile, file_location)
 
         @exec_cache.add_command(@profile, file_location) if @shell.exec_file!(file_location).success?
@@ -78,7 +82,7 @@ module Dottie
       def brew_bundle(brewfile = 'Brewfile')
         return unless @os.macos?
 
-        brewfile_path = File.expand_path(brewfile, @profile.location)
+        brewfile_path = full_file_path(brewfile)
         raise "No Brewfile at #{brewfile_path}." unless @file_system.file?(brewfile_path)
 
         install_homebrew unless command_exists?('brew')
