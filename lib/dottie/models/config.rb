@@ -33,7 +33,15 @@ module Dottie
       end
 
       def profile(id)
-        self.profiles.nil? ? nil : self.profiles[id]
+        profiles.nil? ? nil : profiles[id]
+      end
+
+      def profile_description(profile)
+        profile.repo_id.nil? ? profile.location : repo(profile.repo_id).url
+      end
+
+      def all_profiles
+        profiles.nil? ? [] : profiles.values
       end
 
       def add_shell(shell_type, shell_settings)

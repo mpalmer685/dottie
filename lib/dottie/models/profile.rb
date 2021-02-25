@@ -10,6 +10,10 @@ module Dottie
       def id
         location.gsub(/\W/, '_')
       end
+
+      def name
+        File.basename(location)
+      end
     end
   end
 end
