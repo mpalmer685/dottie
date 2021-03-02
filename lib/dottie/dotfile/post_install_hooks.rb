@@ -28,6 +28,10 @@ module Dottie
         @file_system.mkdir(path)
       end
 
+      def copy(from, to)
+        @file_system.copy(full_file_path(from), full_file_path(to))
+      end
+
       def erb(file_location, output_path = nil)
         if output_path.nil?
           output_file_name = ".#{File.basename(file_location, '.erb')}"

@@ -70,6 +70,17 @@ module Dottie
       end
     end
 
+    def copy(from, to)
+      if directory?(from)
+        FileUtils.mkdir_p(to)
+        directory_contents(from).each do |f|
+          copy(File.join(from, f), File.join(to, f))
+        end
+      else
+        copy_file(from, to)
+      end
+    end
+
     private
 
     def delete(path, recursive: false)
@@ -83,6 +94,17 @@ module Dottie
     def retry_symlink(to, from)
       delete(from)
       symlink(to, from)
+    end
+
+    def copy_file(from, to)
+      raise "Unable to copy #{from}. File does not exist." unless file?(from)
+      return if file?(to) && FileUtils.compare_file(from, to)
+
+      FileUtils.copy_file(from, to)
+    end
+
+    def directory_contents(path)
+      Dir.entries(path).select { |f| f != '.' && f != '..' }
     end
   end
 end
