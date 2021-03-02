@@ -16,12 +16,12 @@ module Dottie
         @file_system.symlink_path(symlink)
       end
 
-      def symlink(from, to: nil)
-        if to.nil?
-          output_file_name = ".#{File.basename(from)}"
-          to = File.join(ENV['HOME'], output_file_name)
+      def symlink(to, from: nil)
+        if from.nil?
+          output_file_name = ".#{File.basename(to)}"
+          from = File.join(ENV['HOME'], output_file_name)
         end
-        @file_system.symlink(full_file_path(from), to)
+        @file_system.symlink(full_file_path(to), from)
       end
 
       def mkdir(path)

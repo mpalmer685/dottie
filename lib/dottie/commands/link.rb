@@ -27,7 +27,7 @@ module Dottie
         end
         raise file_exists(link_path) if @file_system.file?(link_path) && !@file_system.symlink?(link_path)
 
-        @file_system.symlink(link_path, shell_path)
+        @file_system.symlink(shell_path, link_path)
       end
 
       private

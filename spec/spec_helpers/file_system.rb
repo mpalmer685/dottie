@@ -76,7 +76,7 @@ module SpecHelper
       read_file(symlink).gsub(/^@/, '')
     end
 
-    def symlink(from, to)
+    def symlink(to, from)
       write_file(from, "@#{to}")
     end
 

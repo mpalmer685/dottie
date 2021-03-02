@@ -53,13 +53,13 @@ module Dottie
     end
 
     def symlink_path(symlink)
-      out, = @shell.run('readlink', symlink)
+      out, = @shell.run('readlink', symlink, silent: true)
       out.strip
     end
 
-    def symlink(from, to)
+    def symlink(to, from)
       if symlink?(from)
-        retry_symlink(from, to) unless symlink_path(from) == to
+        retry_symlink(to, from) unless symlink_path(from) == to
       elsif file?(from)
         raise "File #{from} exists in place of symlink."
       elsif directory?(from)
@@ -80,9 +80,9 @@ module Dottie
       raise "Could not delete #{path}" if @shell.run!('rm', *args).failure?
     end
 
-    def retry_symlink(from, to)
-      rm from
-      symlink from, to
+    def retry_symlink(to, from)
+      delete(from)
+      symlink(to, from)
     end
   end
 end
