@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
+require 'pastel'
 require 'tty-logger'
 
 require 'dottie/logger/handler'
 
 module Dottie
   class Logger
+    extend Forwardable
+
+    def_delegators :@color, :decorate
+
     def self.default
       @@default ||= new(Handler)
     end
@@ -18,6 +23,7 @@ module Dottie
       @logger = TTY::Logger.new do |config|
         config.handlers = [handler]
       end
+      @color = Pastel.new
       @indentation_level = 0
     end
 

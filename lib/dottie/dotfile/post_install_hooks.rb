@@ -25,7 +25,13 @@ module Dottie
       end
 
       def mkdir(path)
-        @file_system.mkdir(path)
+        dir_path = full_file_path(path)
+        if @file_system.directory?(dir_path)
+          info("#{decorate(dir_path, :bold)} already exists")
+          return
+        end
+
+        @file_system.mkdir(full_file_path(path))
       end
 
       def copy(from, to)
@@ -57,6 +63,10 @@ module Dottie
       define_logging_level :success
       define_logging_level :warn
       define_logging_level :error
+
+      def decorate(*args)
+        @logger.decorate(*args)
+      end
 
       # Shell
 
