@@ -9,18 +9,18 @@ env_path_add() {
   fi
 }
 
-  <% path_add.each { |path| -%>
+<% path_add.each { |path| -%>
 env_path_add "<%= path %>"
-  <% } -%>
+<% } -%>
 
 unset env_path_add
 
 <% end -%>
 <% source.each { |path| -%>
 source "<%= path %>"
-
 <% } -%>
 <% unless fpath_add.empty? -%>
+
 env_fpath_add() {
   if [[ -d "$1" ]]; then
     fpath=($1 $fpath)
@@ -28,13 +28,13 @@ env_fpath_add() {
   fi
 }
 
-  <% fpath_add.each { |path| -%>
+<% fpath_add.each { |path| -%>
 env_fpath_add "<%= path %>"
-  <% } -%>
+<% } -%>
 
 unset env_fpath_add
-
 <% end -%>
+
 # Override global variables in a ~/.localrc file
 if [[ -a ~/.localrc ]]; then
   source ~/.localrc
