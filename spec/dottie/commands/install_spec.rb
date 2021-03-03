@@ -1,10 +1,16 @@
 # frozen_string_literal: true
 
+require 'date'
+
 require 'dottie/commands/install'
 require 'dottie/storage'
 
 RSpec::Matchers.define :profile_at do |location|
   match { |actual| (actual.is_a? Dottie::Models::Profile) && (actual.location == location) }
+end
+
+RSpec::Matchers.define :be_between do |min, max|
+  match { |actual| actual >= min && actual <= max }
 end
 
 files = {
@@ -120,5 +126,30 @@ describe Dottie::Commands::Install do
       have_attributes(location: '/home/dottie/repos/git/test', repo_id: 'git')
     expect(saved_config.shell_settings(:common).commands.size).to be(1)
     expect(saved_config.shell_settings(:common).environment_vars).to include(test: 'true')
+  end
+
+  it 'should mark the date the profile was installed and processed' do
+    expect(parser).to receive(:from_profile)
+                        .with(profile_at('/home/dottie/repos/git/test'), anything)
+                        .and_return(dotfile)
+    expect(git).to receive(:clone).with(instance_of(Dottie::Models::Repo), '/home/dottie/repos/git')
+    expect(dotfile).to receive(:shells).and_return(
+      {
+        common: Dottie::Models::ShellSettings.new(
+          [{}],
+          { test: 'true' }
+        )
+      }
+    )
+    expect(dotfile).to receive(:post_install?).and_return(false)
+
+    start_time = DateTime.now
+    subject.run('test', url: 'git')
+    end_time = DateTime.now
+
+    saved_config = storage.load_model(Dottie::Models::Config)
+    saved_profile = saved_config.profile('_home_dottie_repos_git_test')
+    expect(saved_profile.installed_at).to be_between(start_time, end_time)
+    expect(saved_profile.processed_at).to be_between(start_time, end_time)
   end
 end

@@ -75,6 +75,7 @@ module Dottie
         install_repo(repo) unless repo.nil?
 
         @config.add_profile(profile) if @config.profile(profile.id).nil?
+        profile.mark_installed
       end
 
       def install_repo(repo)
@@ -94,6 +95,7 @@ module Dottie
           end
           run_post_install(dotfile)
         end
+        profile.mark_processed
       end
 
       def run_post_install(dotfile)
