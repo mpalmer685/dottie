@@ -13,11 +13,10 @@ module Dottie
       end
 
       def run
-        profiles = @config.all_profiles
+        profiles = @config.profiles
         if profiles.empty?
           puts <<~INSTALL
             No profiles installed. You can install a profile by running
-
               #{@pastel.cyan.bold('dottie install PROFILE_LOCATION')}
           INSTALL
           return

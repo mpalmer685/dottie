@@ -9,52 +9,65 @@ require 'dottie/models/yaml_helpers'
 
 module Dottie
   module Models
-    Config = Struct.new(:dotfile_path, :repos, :profiles, :shells, keyword_init: true) do
+    class Config
       include KeywordYaml
 
-      def self.config_file_location(os)
-        File.join(os.config_dir, 'config.yml')
+      attr_accessor :dotfile_path
+
+      def initialize(config = {})
+        @dotfile_path = config.fetch(:dotfile_path, '')
+        @repos = config.fetch(:repos, {})
+        @profiles = config.fetch(:profiles, {})
+        @installed_profiles = config.fetch(:installed_profiles, [])
+        @shells = config.fetch(:shells, {})
       end
 
       def add_repo(repo)
-        self.repos ||= {}
-        self.repos[repo.id] = repo
-        repo
+        @repos[repo.id] = repo
       end
 
       def repo(id)
-        self.repos.nil? ? nil : self.repos[id]
+        @repos[id]
       end
 
       def add_profile(profile)
-        self.profiles ||= {}
-        self.profiles[profile.id] = profile
-        profile
+        @installed_profiles << profile.id
+        @profiles[profile.id] = profile
       end
 
       def profile(id)
-        profiles.nil? ? nil : profiles[id]
+        @profiles[id]
       end
 
       def profile_description(profile)
         profile.repo_id.nil? ? profile.location : repo(profile.repo_id).url
       end
 
-      def all_profiles
-        profiles.nil? ? [] : profiles.values
+      def profiles
+        @installed_profiles.map { |p| profile(p.id) }
       end
 
       def add_shell(shell_type, shell_settings)
-        self.shells ||= {}
-        shell = self.shells[shell_type] || ShellSettings.new
-        shell.merge!(shell_settings)
-        self.shells[shell_type] = shell
+        shell = @shells[shell_type] || ShellSettings.new
+        @shells[shell_type] = shell.merge(shell_settings)
       end
 
       def shell_settings(shell_type)
-        return ShellSettings.new if shells.nil? || !shells.key?(shell_type)
+        @shells.fetch(shell_type) { |_| ShellSettings.new }
+      end
 
-        shells[shell_type]
+      def self.config_file_location(os)
+        File.join(os.config_dir, 'config.yml')
+      end
+
+      def to_h
+        {
+          dotfile_path: @dotfile_path,
+          repos: @repos,
+          profiles: @profiles,
+          installed_profiles: @installed_profiles,
+          shells: @shells
+        }
       end
     end
   end
