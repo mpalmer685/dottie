@@ -1,7 +1,9 @@
+<% unless env.empty? -%>
 <% env.each { |name, value| -%>
 export <%= name %>="<%= value %>"
-
 <% } -%>
+
+<% end -%>
 <% unless path_add.empty? -%>
 env_path_add() {
   if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
@@ -13,7 +15,7 @@ env_path_add() {
 env_path_add "<%= path %>"
 <% } -%>
 
-unset env_path_add
+unset -f env_path_add
 
 <% end -%>
 <% source.each { |path| -%>
@@ -24,7 +26,7 @@ source "<%= path %>"
 env_fpath_add() {
   if [[ -d "$1" ]]; then
     fpath=($1 $fpath)
-    autoload -U "$1/*(:t)"
+    autoload -U $1/*(:t)
   fi
 }
 
@@ -32,7 +34,7 @@ env_fpath_add() {
 env_fpath_add "<%= path %>"
 <% } -%>
 
-unset env_fpath_add
+unset -f env_fpath_add
 <% end -%>
 
 # Override global variables in a ~/.localrc file
