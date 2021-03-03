@@ -100,6 +100,7 @@ module Dottie
       raise "Unable to copy #{from}. File does not exist." unless file?(from)
       return if file?(to) && FileUtils.compare_file(from, to)
 
+      to = File.join(to, File.basename(from)) if directory?(to)
       FileUtils.copy_file(from, to)
     end
 
