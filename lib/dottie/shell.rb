@@ -10,14 +10,18 @@ module Dottie
 
     def run(command, *args, silent: false, cwd: nil, **opts)
       @cmd.printer.silent = silent
-      @cmd.run(command, *args, config(opts, cwd))
+      result = @cmd.run(command, *args, config(opts, cwd))
+      yield if block_given? && result.success?
+      result
     ensure
       @cmd.printer.silent = false
     end
 
     def run!(command, *args, silent: false, cwd: nil, **opts)
       @cmd.printer.silent = silent
-      @cmd.run!(command, *args, config(opts, cwd))
+      result = @cmd.run!(command, *args, config(opts, cwd))
+      yield if block_given? && result.success?
+      result
     ensure
       @cmd.printer.silent = false
     end
@@ -25,7 +29,9 @@ module Dottie
     def sudo(command, *args, silent: false, cwd: nil, **opts)
       @cmd.printer.silent = silent
       opts[:user] = 'root'
-      @cmd.run(command, *args, config(opts, cwd))
+      result = @cmd.run(command, *args, config(opts, cwd))
+      yield if block_given? && result.success?
+      result
     ensure
       @cmd.printer.silent = false
     end
@@ -33,21 +39,27 @@ module Dottie
     def sudo!(command, *args, silent: false, cwd: nil, **opts)
       @cmd.printer.silent = silent
       opts[:user] = 'root'
-      @cmd.run!(command, *args, config(opts, cwd))
+      result = @cmd.run!(command, *args, config(opts, cwd))
+      yield if block_given? && result.success?
+      result
     ensure
       @cmd.printer.silent = false
     end
 
     def exec_file(path, silent: false, **opts)
       @cmd.printer.silent = silent
-      @cmd.run('sh', path, config(opts, nil))
+      result = @cmd.run('sh', path, config(opts, nil))
+      yield if block_given? && result.success?
+      result
     ensure
       @cmd.printer.silent = false
     end
 
     def exec_file!(path, silent: false, **opts)
       @cmd.printer.silent = silent
-      @cmd.run!('sh', path, config(opts, nil))
+      result = @cmd.run!('sh', path, config(opts, nil))
+      yield if block_given? && result.success?
+      result
     ensure
       @cmd.printer.silent = false
     end

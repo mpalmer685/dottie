@@ -70,23 +70,29 @@ module Dottie
 
       # Shell
 
-      def exec(cmd, once: false)
+      def exec(cmd, once: false, silent: false)
         return if once && @exec_cache.contain?(@profile, cmd)
 
-        @exec_cache.add_command(@profile, cmd) if @shell.run!(cmd, cwd: @profile.location).success?
+        @shell.run!(cmd, silent: silent, cwd: @profile.location) do
+          @exec_cache.add_command(@profile, cmd)
+        end.out.chomp
       end
 
-      def sudo(cmd, once: false)
+      def sudo(cmd, once: false, silent: false)
         return if once && @exec_cache.contain?(@profile, cmd)
 
-        @exec_cache.add_command(@profile, cmd) if @shell.sudo!(cmd, cwd: @profile.location).success?
+        @shell.sudo!(cmd, silent: silent, cwd: @profile.location) do
+          @exec_cache.add_command(@profile, cmd)
+        end.out.chomp
       end
 
-      def exec_file(path, once: false)
+      def exec_file(path, once: false, silent: false)
         file_location = full_file_path(path)
         return if once && @exec_cache.contain?(@profile, file_location)
 
-        @exec_cache.add_command(@profile, file_location) if @shell.exec_file!(file_location).success?
+        @shell.exec_file!(file_location, silent: silent) do
+          @exec_cache.add_command(@profile, file_location)
+        end
       end
 
       def command_exists?(command)
@@ -100,11 +106,9 @@ module Dottie
         raise "No Brewfile at #{brewfile_path}." unless @file_system.file?(brewfile_path)
 
         install_homebrew unless command_exists?('brew')
-        @logger.info("Installing brew dependencies from Brewfile at #{brewfile_path}") do
-          @shell.run('brew update')
-          @shell.run('brew bundle', '--no-lock', '--file', brewfile_path)
-          @logger.success('Done!')
-        end
+        @logger.info("Installing brew dependencies from Brewfile at #{brewfile_path}")
+        @shell.run('brew update')
+        @shell.run('brew bundle', '--no-lock', '--file', brewfile_path)
       end
 
       def install_homebrew
