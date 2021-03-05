@@ -19,7 +19,6 @@ module Dottie
         @repos = config.fetch(:repos, {})
         @profiles = config.fetch(:profiles, {})
         @installed_profiles = config.fetch(:installed_profiles, [])
-        @shells = config.fetch(:shells, {})
       end
 
       def add_repo(repo)
@@ -44,16 +43,11 @@ module Dottie
       end
 
       def profiles
-        @installed_profiles.map { |p| profile(p.id) }
-      end
-
-      def add_shell(shell_type, shell_settings)
-        shell = @shells[shell_type] || ShellSettings.new
-        @shells[shell_type] = shell.merge(shell_settings)
+        @installed_profiles.map { |id| profile(id) }
       end
 
       def shell_settings(shell_type)
-        @shells.fetch(shell_type) { |_| ShellSettings.new }
+        profiles.reduce(ShellSettings.new) { |settings, p| settings.merge(p.shell_settings(shell_type)) }
       end
 
       def self.config_file_location(os)
@@ -65,8 +59,7 @@ module Dottie
           dotfile_path: @dotfile_path,
           repos: @repos,
           profiles: @profiles,
-          installed_profiles: @installed_profiles,
-          shells: @shells
+          installed_profiles: @installed_profiles
         }
       end
     end

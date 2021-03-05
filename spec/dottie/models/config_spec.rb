@@ -74,32 +74,11 @@ describe Dottie::Models::Config do
     expect(config.profile(profile.id)).to be_nil
   end
 
-  it 'should add shell settings for a new shell type' do
-    config = described_class.new
-    config.add_shell(:common, shell_settings)
-
-    expect(config.shell_settings(:common).commands).to eq(shell_settings.commands)
-    expect(config.shell_settings(:common).environment_vars).to eq(shell_settings.environment_vars)
-  end
-
-  it 'should merge shell settings for an existing shell type' do
-    commands = [{ type: :path_add }]
-    env = {
-      test: false,
-      home: '/home'
-    }
-    existing_settings = Dottie::Models::ShellSettings.new(commands, env)
-    config = described_class.new(shells: { common: existing_settings })
-    config.add_shell(:common, shell_settings)
-
-    expect(config.shell_settings(:common).commands.size).to be(2)
-    expect(config.shell_settings(:common).environment_vars[:test]).to eq('true')
-    expect(config.shell_settings(:common).environment_vars[:home]).to eq('/home')
-  end
-
   it 'should return shell settings by shell type' do
+    profile.add_shell(:common, shell_settings)
+
     config = described_class.new
-    config.add_shell(:common, shell_settings)
+    config.add_profile(profile)
 
     expect(config.shell_settings(:common)).to eq(shell_settings)
   end

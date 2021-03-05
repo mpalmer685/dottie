@@ -91,7 +91,7 @@ module Dottie
         @logger.info('Processing Dotfile') do
           dotfile = Dotfile.from_profile(profile, @model_storage.exec_cache)
           dotfile.shells.each_pair do |shell_type, settings|
-            @config.add_shell(shell_type, settings)
+            profile.add_shell(shell_type, settings)
           end
           run_post_install(dotfile)
         end
